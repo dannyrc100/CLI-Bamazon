@@ -6,7 +6,7 @@ USE bamazon_db;
 
 CREATE TABLE products (
 
-	item_id INT AUTO_INCREMENT_ID PRIMARY KEY,
+	item_id INT AUTO_INCREMENT_ID NOT NULL,
 
 	product_name VARCHAR(100) NOT NULL,
 
@@ -14,12 +14,14 @@ CREATE TABLE products (
 
 	price DECIMAL(10,2) NOT NULL,
 
-	stock_quantity INT (1000),
+	stock_quantity INT (10),
+
+	PRIMARY KEY(item_id)
 )
 
-AUTO_INCREMENT_ID = 1000;
+SElECT * FROM products;
 
-INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES 
+INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES 
 
 ('Fire TV Stick with Alexa Voice Remote', 'Electronics', 39.99, 500),
 ('Roku Streaming Stick', 'Electronics', 39.99, 250),
