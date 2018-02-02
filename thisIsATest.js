@@ -1,24 +1,22 @@
 var inquirer = require('inquirer');
-var coloring = require('coloring');
 
 var fs = require('fs');
-fs.readFile('config.txt', 'utf8', function (err, data) {
-  if (err) throw err;
-  var key = data;
-  getDatabase(key);
+fs.readFile('config.txt', 'utf8', function(err, data){
+   if(err) throw err;
+   var key = data;
+   getDatabase(key);
 })
 
 var mysql = require('mysql');
-
-function getDatabase(key) {
-  var connection = mysql.createConnection({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: key,
-    database: 'bamazon_db'
-  });
-  menu_options(connection);
+function getDatabase(key){
+   var connection = mysql.createConnection({
+      host: 'localhost',
+      port: 3306,
+      user: 'root',
+      password: key,
+      database: 'bamazon_db'
+   });
+   menu_options(connection);
 }
 
 function menu_options(connection) {
@@ -26,11 +24,11 @@ function menu_options(connection) {
   inquirer.prompt({
     type: 'list',
     name: 'option',
-    message: coloring.green('****** MENU OPTIONS *****'),
-    choices: ['View Products In Stock', 'Buy Product', 'View Your Cart', 'Exit']
+    message: '****** MENU OPTIONS *****',
+    choices: ['View Products for Sale', 'Buy Product', 'View Your Cart', 'Exit']
   }).then(function (answer) {
     switch (answer.option) {
-      case 'View Products In Stock':
+      case 'View Products for Sale':
         viewProducts(connection);
         break;
       case 'Buy Product':
@@ -48,23 +46,23 @@ function menu_options(connection) {
 }
 
 function viewProducts(connection) {
-  cl(coloring.green('\n****** PRODUCTS IN STOCK ******\n'));
+  //display database contents
+  cl('\n****** PRODUCTS FOR SALE ******\n');
+  // ids, names, and prices of products for sale
   var query = 'SELECT item_id, product_name, price, stock_quantity FROM bamazon_db.products';
   connection.query(query, function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      cl(' Product ID#: ' + coloring.bold(res[i].item_id) + ' | Product Name: ' +
-        coloring.bold(res[i].product_name) + ' | Price: $' + coloring.bold(res[i].price));
-      cl(coloring.green('-------------------------------------------------------------------------------------------'));
+      //display database contents 
+      cl(' Product ID#: ' + res[i].item_id + ' | Product Name: ' +
+        res[i].product_name + ' | Price: $' + res[i].price);
+      cl('-------------------------------------------------------------------------------------------');
     }
-    //call function for user to buy product and passing connection as parameter
     menu_options(connection);
   });
 }
-//function for user to buy product
 function buyProduct(connection) {
   cl('\n');
-  //use inquirer to get user inputs
   inquirer.prompt([{
       type: 'input',
       name: 'idNumber',
@@ -77,7 +75,6 @@ function buyProduct(connection) {
       }
     },
     {
-      // inquirer user to get user input
       type: 'input',
       name: 'quantity',
       message: 'How many would you like to add to your cart?',
@@ -99,13 +96,11 @@ function buyProduct(connection) {
         return;
       } else {
         if (answer.quantity > res[0].stock_quantity) {
-          cl(coloring.red('\n ***** Quantity in stock not available *****'));
-          //show user quantity available in stock
+          cl('\n ***** Quantity in stock not available *****');
           cl('Quantity available in stock: ' + res[0].stock_quantity);
           menu_options(connection);
           return true;
         }
-        //condition pass if quantity is stock is available
         else {
           if (res[0].product_name !== undefined && answer.quantity > 0) {
             var product = res[0].product_name;
@@ -123,13 +118,12 @@ function buyProduct(connection) {
                   product_sales: total
                 },
                 {
-                  //query the item_id then insert new quantity to this id
                   item_id: answer.idNumber
                 }
               ],
               function (err, res) {
                 if (answer.quantity > 0) {
-                  cl(coloring.green(" It Has Been Added to Your Cart!\n"));
+                  cl(" It Has Been Added to Your Cart!\n");
                   menu_options(connection);
                 }
               }
@@ -143,8 +137,8 @@ function buyProduct(connection) {
             }).then(function (user) {
               if (user.option === 'Continue Shopping.') {
                 menu_options(connection);
-              } else if (user.option === 'Exit Program.') {
-                //exit and end program
+              }              //condition executes if intentional in a attempt to exit the program
+              else if (user.option === 'Exit Program.') {
                 menu_options(connection);
               }
             })
@@ -156,19 +150,21 @@ function buyProduct(connection) {
 }
 //function Cart
 function viewCart(connection) {
-  cl(coloring.green('\n ****** YOUR CART ******'));
+  cl('\n ****** YOUR CART ******');
+  //Read cart
   fs.readFile("cart.txt", "utf8", function (err, data) {
+    //Throw error if not meet condition
     if (err) {
       return cl(err);
     }
     var cart = data.split(", ");
-    var total = '';
+    var total = 0;
     for (var i = 1; i < cart.length; i++) {
-      total += parseFloat(cart[i + 2]).toFixed(2);
-      var myCart = ' Product Name: ' + cart[i] + ' | Quantity: ' + cart[i + 1] + ' | Total: $' + parseFloat(cart[i + 2]).toFixed(2);
+      total += parseFloat(cart[i + 2]);
+      var myCart = ' Product Name: ' + cart[i] + ' | Quantity: ' + cart[i + 1] + ' | Total: ' + cart[i + 2];
 
       cl(myCart);
-      cl(coloring.green('-------------------------------------------------------------------------------------'));
+      cl('-------------------------------------------------------------------------------------');
 
       i += 2;
     }
@@ -177,14 +173,14 @@ function viewCart(connection) {
       menu_options(connection);
       return;
     }
-    cl(' You Pay: $' + total);
+    cl(' You Pay: ' + total);
     menu_options(connection);
   });
 }
-//function to end database connection and exit program
+
 function disconnect(connection) {
   fs.writeFile('cart.txt', '', function () {
-    cl('\n***** THANKS FOR YOUR PURCHASE! *****\n');
+    cl('\n***** THANKS FOR SHOPPING WITH US! *****\n');
     connection.end();
   });
 }

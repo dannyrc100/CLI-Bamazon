@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dannyrc100/CLI-Bamazon#readme",
   "dependencies": {
+    "coloring": "^0.1.0",
     "inquirer": "^5.0.1",
     "mysql": "^2.15.0"
   }
