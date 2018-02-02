@@ -1,0 +1,19 @@
+{
+  "name": "cli-bamazon",
+  "version": "1.0.0",
+  "description": "\"CLI App Homework\"",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dannyrc100/CLI-Bamazon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dannyrc100/CLI-Bamazon/issues"
+  },
+  "homepage": "https://github.com/dannyrc100/CLI-Bamazon#readme"
+}
